@@ -1,10 +1,10 @@
 require('dotenv').config()
 
 const Request = require('request')
-const Winston = require('winston')
+const logger = require('./lib/logger')
 
 const SLACK_URL = process.env.SLACK_URL
-//console.log(`SLACK_URL: ${SLACK_URL}`)
+logger.debug(`SLACK_URL: ${SLACK_URL}`)
 
 const headers = {
     'Content-Type': 'application/json'
@@ -25,46 +25,53 @@ let postPayload = {
 }
 
 exports.sessionUpdated = (req, res) => {
-  console.log(`titoMessage Called`)
+  logger.info(`Session Updated Message Called`)
 
   return Promise.resolve()
    .then(() => {
      if (req.method !== 'POST') {
        const error = new Error('Only POST requests are accepted');
        error.code = 405;
+
+       logger.error(`Non Post Method Recieved: ${req.method}`)
        throw error;
      }
 
       const message = req.body
       const slackMessage = buildSlackMessage(message)
-      //console.log(`slack message ${JSON.stringify(slackMessage)}`)
+      logger.debug(`Formatted Slack Message: \n ${JSON.stringify(slackMessage)}`)
 
       postPayload.text = slackMessage.text
       postPayload.attachments = slackMessage.attachments
 
-      //console.log(`Slack Payload: ${JSON.stringify(postPayload)}`)
+      //logger.info(`Slack Payload: ${JSON.stringify(postPayload)}`)
       options.body = JSON.stringify(postPayload)
 
-      //console.log(`Sending Message To Slack`)
+      //logger.info(`Sending Message To Slack`)
       Request(options, (error, response, body) => {
-        console.log(`Slack Response Code: ${response.statusCode}`)
+        logger.debug(`Slack Response Code: ${response.statusCode}`)
+        logger.debug(`Request Body Recieved: \n ${body}`)
 
        if (!error && response.statusCode == 200) {
-          console.log(`Message Sent To Slack`)
-           Winston.info(body)
-           res.status(response.statusCode)
-           res.send('slack message sent');
+          logger.info(`Message Relayed To Slack`)
+
+          res.status(response.statusCode)
+          res.send('Message Relayed to Slack');
          }
          res.end();
       })
 
     })
     .catch((err) => {
-      console.error(err);
+      logger.error(err);
       const code = err.code || (err.response ? err.response.statusCode : 500) || 500;
       res.status(code).send(err);
       return Promise.reject(err);
     });
+}
+
+exports.sessionCancelled = (req, res) => {
+
 }
 
 const buildSlackMessage = (sessionUpdated) => {

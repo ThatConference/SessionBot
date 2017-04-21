@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/ThatConference/SessionBot",
   "dependencies": {
+    "@google-cloud/logging-winston": "^0.4.1",
     "dotenv": "^4.0.0",
     "request": "^2.70.0",
     "winston": "^2.3.1"
