@@ -73,13 +73,13 @@ const buildSessionUpdatedSlackMessage = (sessionUpdated) => ({
       text: sessionUpdated.ShortDescription,
       fields: [
         {
-          title: 'Room',
-          value: sessionUpdated.Room.Changed ?  `${sessionUpdated.Room.Old} Is Now ${sessionUpdated.Room.Current}` : sessionUpdated.Room.Current,
+          title: sessionUpdated.Room.Changed ?  'Room Changed' : 'Room',
+          value: sessionUpdated.Room.Changed ?  `${sessionUpdated.Room.Old} -> ${sessionUpdated.Room.Current}` : sessionUpdated.Room.Current,
           short: true
         },
         {
-          title: 'Time',
-          value: sessionUpdated.Time.Changed ?  `${sessionUpdated.Time.Old} Is Now ${sessionUpdated.Time.Current}` : sessionUpdated.Time.Current,
+          title: sessionUpdated.Time.Changed ? 'Time Changed' : 'Time',
+          value: sessionUpdated.Time.Changed ?  `${sessionUpdated.Time.Old} -> ${sessionUpdated.Time.Current}` : sessionUpdated.Time.Current,
           short: true
         }
       ]
