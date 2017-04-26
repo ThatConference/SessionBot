@@ -22,8 +22,26 @@ const postPayload = {
 }
 
 exports.sessionUpdated = (req, res) => {
-  console.log(`Session Updated Message Called`)
+  isPost(req, res)
 
+  const message = req.body
+  const slackMessage = buildSessionUpdatedSlackMessage(message)
+  const reqOpts = buildPayload(slackMessage)
+
+  Request(reqOpts).pipe(res)
+}
+
+exports.sessionCancelled = (req, res) => {
+  isPost(req, res)
+
+  const message = req.body
+  const slackMessage = buildSessionCancelledSlackMessage(message)
+  const reqOpts = buildPayload(slackMessage)
+
+  Request(reqOpts).pipe(res)
+}
+
+const isPost = (req, res) => {
   if (req.method !== 'POST') {
     const error = new Error('Only POST requests are accepted')
 
@@ -31,22 +49,19 @@ exports.sessionUpdated = (req, res) => {
 
     return res.status(405).send(error)
   }
+}
 
-  const message = req.body
-  const slackMessage = buildSlackMessage(message)
+const buildPayload = (slackMessage) => {
   const payload = Object.assign({}, slackMessage, postPayload)
   const reqOpts = Object.assign({ body: JSON.stringify(payload) }, options)
 
   console.log(`Formatted Slack Message: \n ${JSON.stringify(payload)}`)
 
-  Request(reqOpts).pipe(res)
+  return reqOpts
 }
 
-exports.sessionCancelled = (req, res) => {
-}
-
-const buildSlackMessage = (sessionUpdated) => ({
-  text: `*${sessionUpdated.Speaker}'s* session was just updated. :tada:`,
+const buildSessionUpdatedSlackMessage = (sessionUpdated) => ({
+  text: `*${sessionUpdated.Speaker}'s* session was just updated. :bacon: :tada:`,
   attachments: [
     {
       fallback: `${sessionUpdated.Speaker} session was just updated.`,
@@ -59,15 +74,30 @@ const buildSlackMessage = (sessionUpdated) => ({
       fields: [
         {
           title: 'Room',
-          value: sessionUpdated.Room,
+          value: sessionUpdated.Room.Changed ?  `${sessionUpdated.Room.Old} Is Now ${sessionUpdated.Room.Current}` : sessionUpdated.Room.Current,
           short: true
         },
         {
           title: 'Time',
-          value: sessionUpdated.Time,
+          value: sessionUpdated.Time.Changed ?  `${sessionUpdated.Time.Old} Is Now ${sessionUpdated.Time.Current}` : sessionUpdated.Time.Current,
           short: true
         }
       ]
+    }
+  ]
+})
+
+const buildSessionCancelledSlackMessage = (sessionUpdated) => ({
+  text: `*${sessionUpdated.Title}* was just *cancelled*. :cry:`,
+  attachments: [
+    {
+      fallback: `${sessionUpdated.Title} was just cancelled.`,
+      color: '#36a64f',
+      author_name: sessionUpdated.Speaker,
+      author_link: sessionUpdated.SpeakerUrl,
+      title: sessionUpdated.Title,
+      title_link: sessionUpdated.URL,
+      text: sessionUpdated.ShortDescription,
     }
   ]
 })

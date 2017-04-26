@@ -7,3 +7,24 @@
   "Speaker": "Clark Sell",
   "SpeakerUrl": "https://wwww.thatconference.com/sesssions"
 }
+
+
+
+//is cancelled
+{
+  "Title": "IGNORE TESTING, IGNORE TESTING, IGNORE",
+  "ShortDescription": "Bacon ipsum dolor amet boudin tri-tip tail kevin tongue, t-bone short ribs pork corned beef jerky salami. Spare ribs biltong prosciutto turducken, chicken.....",
+  "Room": {
+    "Changed": true,
+    "Old": "MAIN STAGE",
+    "Current": "MAIN STAGE #2"
+  },
+  "Time": {
+    "Changed": true,
+    "Old": "8/7/2017",
+    "Current": "8/8/2017"
+  },
+  "URL": "http://www.thatconf.com",
+  "Speaker": "Clark Sell",
+  "SpeakerUrl": "https://wwww.thatconference.com/sesssions"
+}
